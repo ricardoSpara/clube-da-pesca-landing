@@ -37,24 +37,6 @@ function installPixelQueue() {
   pixel('init', META_PIXEL_ID)
 }
 
-function sendLightweightPixelEvent(eventName: 'PageView' | 'ViewContent') {
-  if (!META_PIXEL_ID) return
-
-  const endpoint = new URL('https://www.facebook.com/tr/')
-  endpoint.search = new URLSearchParams({
-    id: META_PIXEL_ID,
-    ev: eventName,
-    dl: window.location.href,
-    rl: document.referrer,
-    ts: Date.now().toString(),
-    noscript: '1',
-  }).toString()
-
-  const beacon = new Image(1, 1)
-  beacon.alt = ''
-  beacon.src = endpoint.toString()
-}
-
 function loadMetaPixel() {
   if (!META_PIXEL_ID || pixelRequested) return
   pixelRequested = true
@@ -96,12 +78,9 @@ setupStickyCta()
 
 if (META_PIXEL_ID) {
   installPixelQueue()
-  sendLightweightPixelEvent('PageView')
-  sendLightweightPixelEvent('ViewContent')
-
-  window.setTimeout(loadMetaPixel, 8_000)
-  document.addEventListener('pointerdown', loadMetaPixel, { once: true, passive: true })
-  document.addEventListener('keydown', loadMetaPixel, { once: true })
+  window.fbq?.('track', 'PageView')
+  window.fbq?.('track', 'ViewContent')
+  loadMetaPixel()
 }
 
 const whatsappGroupUrl = getWhatsappGroupUrl()

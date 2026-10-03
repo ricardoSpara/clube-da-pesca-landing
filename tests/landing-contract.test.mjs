@@ -44,19 +44,19 @@ test('shows the WhatsApp brand icon in every conversion button', async () => {
   assert.doesNotMatch(html, /☎/)
 })
 
-test('keeps analytics support pending and identifies each CTA placement', async () => {
+test('installs the fishing Meta Pixel and identifies each CTA placement', async () => {
   const [html, config, main] = await Promise.all([
     source('index.html'),
     source('src/config.ts'),
     source('src/main.ts'),
   ])
 
-  assert.match(config, /META_PIXEL_ID: string \| null = null/)
-  assert.match(html, /ID de analytics da pesca: pendente/)
+  assert.match(config, /META_PIXEL_ID: string \| null = '1413752953721295'/)
+  assert.match(html, /tr\?id=1413752953721295&amp;ev=PageView&amp;noscript=1/)
   assert.doesNotMatch(`${html}\n${main}`, /915964627618020/)
   assert.match(main, /if \(META_PIXEL_ID\)/)
-  assert.match(main, /PageView/)
-  assert.match(main, /ViewContent/)
+  assert.match(main, /window\.fbq\?\.\('track', 'PageView'\)/)
+  assert.match(main, /window\.fbq\?\.\('track', 'ViewContent'\)/)
   assert.match(main, /'Lead'/)
   assert.match(main, /IntersectionObserver/)
   assert.match(main, /threshold:\s*\[0,\s*0\.25\]/)
